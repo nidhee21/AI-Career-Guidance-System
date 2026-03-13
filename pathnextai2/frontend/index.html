@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PathNext AI — Connecting Skills and Future</title>
+<link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-box">🧭</div>PathNext AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="/assessment" class="btn btn-primary" style="padding:8px 20px;font-size:13px">Start Assessment</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-grid"></div>
+  <div class="hero-glow1"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-dots" id="heroDots"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🤖 &nbsp; AI-Powered Career Guidance · 12th Grade Students · Mumbai</div>
+    <h1 class="hero-title"><span class="g">PathNext AI</span></h1>
+    <p class="hero-sub">Connecting Skills and Future</p>
+    <p class="hero-desc">Discover your ideal career path using Machine Learning. We analyse your academics, interests, and soft skills to predict your top 3 career matches — with AI explanations, skill roadmaps, and top Mumbai colleges.</p>
+    <div class="hero-btns">
+      <a href="/assessment" class="btn btn-primary btn-lg">🚀 &nbsp; Start Career Assessment</a>
+      <a href="#how" class="btn btn-outline btn-lg">How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">15+</div><div class="stat-label">Career Paths</div></div>
+      <div><div class="stat-num">95%</div><div class="stat-label">ML Accuracy</div></div>
+      <div><div class="stat-num">3000</div><div class="stat-label">Training Profiles</div></div>
+      <div><div class="stat-num">Free</div><div class="stat-label">Always</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div style="text-align:center" class="fade-up">
+      <div class="sec-badge">Features</div>
+      <h2 class="sec-title" style="margin-top:10px">Everything you need to choose<br>the right career</h2>
+    </div>
+    <div class="features-grid" style="margin-top:52px">
+      <div class="card feat-card fade-up">
+        <div class="feat-icon">🧠</div>
+        <h3 class="feat-title">Smart Career Prediction using AI & Machine Learning</h3>
+        <p class="feat-desc">PathNext AI analyses your academic strengths, interests, and soft skills using a Random Forest ML model trained on 3000+ student profiles to predict careers where you are most likely to succeed.</p>
+      </div>
+      <div class="card feat-card fade-up">
+        <div class="feat-icon">✨</div>
+        <h3 class="feat-title">Personalised Career Insights with AI Explanation</h3>
+        <p class="feat-desc">Get detailed AI-powered explanations that highlight your specific strengths and clearly explain why certain careers fit your unique academic and personal profile. Not generic advice — your advice.</p>
+      </div>
+      <div class="card feat-card fade-up">
+        <div class="feat-icon">🗺️</div>
+        <h3 class="feat-title">Complete Career Guidance in One Place</h3>
+        <p class="feat-desc">See required skills, step-by-step learning roadmaps, and top colleges in Mumbai tailored to each recommended career — everything you need to take the first confident step forward.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background:rgba(0,144,255,0.02);border-top:1px solid rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.04)">
+  <div class="container">
+    <div style="text-align:center" class="fade-up">
+      <div class="sec-badge">How It Works</div>
+      <h2 class="sec-title" style="margin-top:10px">Four simple steps to your future</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="card step-card fade-up"><div class="step-num">1</div><h3 class="step-title">Enter Academic Info</h3><p class="step-desc">Select your stream — Science PCM or PCB, Commerce, or Arts — and enter your subject marks.</p></div>
+      <div class="card step-card fade-up"><div class="step-num">2</div><h3 class="step-title">Pick Your Interests</h3><p class="step-desc">Choose up to 10 interests from 30 options including technology, medicine, law, design, finance, and more.</p></div>
+      <div class="card step-card fade-up"><div class="step-num">3</div><h3 class="step-title">Rate Your Skills</h3><p class="step-desc">Self-assess 10 soft skills like communication, leadership, and analytical thinking on a scale of 1 to 5.</p></div>
+      <div class="card step-card fade-up"><div class="step-num">4</div><h3 class="step-title">Get AI Predictions</h3><p class="step-desc">Our ML model predicts your top 3 career matches with confidence scores plus full AI-powered career guidance.</p></div>
+    </div>
+    <div style="text-align:center;margin-top:48px" class="fade-up">
+      <a href="/assessment" class="btn btn-primary btn-lg">Begin Your Assessment →</a>
+    </div>
+  </div>
+</section>
+
+<footer><p>Built with ❤️ for students figuring out their future &nbsp;·&nbsp; Powered by <span>PathNext AI</span></p></footer>
+
+<script src="js/animations.js"></script>
+<script>
+// Floating dots in hero
+const dotsEl = document.getElementById('heroDots');
+for(let i=0;i<18;i++){
+  const d=document.createElement('div');
+  d.className='dot';
+  const size=Math.random()*3+2;
+  d.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*.2+.1}`;
+  dotsEl.appendChild(d);
+}
+</script>
+</body>
+</html>

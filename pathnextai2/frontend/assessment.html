@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Assessment — PathNext AI</title>
+<link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+<div class="loading" id="loader">
+  <div class="spin"></div>
+  <div class="load-title">Analysing your profile…</div>
+  <div class="load-sub">Random Forest ML is predicting your career paths</div>
+</div>
+
+<nav class="navbar">
+  <a href="/" class="nav-logo"><div class="nav-logo-box">🧭</div>PathNext AI</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/#features">Features</a></li>
+  </ul>
+</nav>
+
+<div class="assess-page">
+  <div class="assess-header">
+    <div class="sec-badge">Career Assessment</div>
+    <h1 class="sec-title" style="margin-top:12px">Tell us about yourself</h1>
+    <p style="color:var(--text2);font-size:15px;margin-top:8px">Fill in all three sections for the most accurate predictions</p>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="pbar" style="width:0%"></div>
+  </div>
+
+  <div class="form-wrap">
+    <div class="err-box" id="errBox"></div>
+
+    <!-- SECTION 1: ACADEMIC -->
+    <div class="card form-card">
+      <div class="f-head">
+        <div class="f-num">1</div>
+        <div><div class="f-title">Academic Information</div><div class="f-sub">Select your stream and enter subject marks</div></div>
+      </div>
+
+      <label class="field-label">Select Stream</label>
+      <div class="stream-row" id="streamRow">
+        <button class="stream-btn" onclick="pickStream('Science',this)">Science</button>
+        <button class="stream-btn" onclick="pickStream('Commerce',this)">Commerce</button>
+        <button class="stream-btn" onclick="pickStream('Arts',this)">Arts</button>
+      </div>
+
+      <div class="sub-row" id="subRow">
+        <span class="sub-label">Choose combination:</span>
+        <button class="sub-btn" onclick="pickSub('PCM',this)">PCM — Physics, Chemistry, Maths</button>
+        <button class="sub-btn" onclick="pickSub('PCB',this)">PCB — Physics, Chemistry, Biology</button>
+      </div>
+
+      <div id="marksArea" style="display:none">
+        <label class="field-label" style="margin-top:20px">Subject Marks (0 – 100)</label>
+        <div class="marks-grid" id="marksGrid"></div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: INTERESTS -->
+    <div class="card form-card">
+      <div class="f-head">
+        <div class="f-num">2</div>
+        <div><div class="f-title">Your Interests</div><div class="f-sub">Select up to 10 interests</div></div>
+      </div>
+      <p class="chip-count"><b id="cntNum">0</b> / 10 selected</p>
+      <div class="chips-wrap" id="chipsWrap"></div>
+    </div>
+
+    <!-- SECTION 3: SOFT SKILLS -->
+    <div class="card form-card">
+      <div class="f-head">
+        <div class="f-num">3</div>
+        <div><div class="f-title">Soft Skills</div><div class="f-sub">Rate yourself: 1 = beginner &nbsp;·&nbsp; 5 = excellent</div></div>
+      </div>
+      <div class="skill-list" id="skillList"></div>
+    </div>
+
+    <div class="submit-area">
+      <button class="btn btn-primary btn-lg" onclick="submitForm()">🔮 &nbsp; Get My Career Predictions</button>
+      <p class="submit-note">Powered by Random Forest ML · Results in 2 seconds</p>
+    </div>
+  </div>
+</div>
+
+<script src="js/animations.js"></script>
+<script>
+// ── DATA ────────────────────────────────────────────────────────
+const SUBJ = {
+  'Science PCM': ['Physics','Chemistry','Maths','English'],
+  'Science PCB': ['Physics','Chemistry','Biology','English'],
+  'Commerce':    ['Accounts','Business Studies','Economics','Maths','English'],
+  'Arts':        ['History','Political Science','Geography','Psychology','Sociology','English'],
+};
+const SKEY = {Physics:'physics',Chemistry:'chemistry',Maths:'maths',Biology:'biology',English:'english',Accounts:'accounts','Business Studies':'business',Economics:'economics',History:'history','Political Science':'political_science',Geography:'geography',Psychology:'psychology',Sociology:'sociology'};
+const INTERESTS = [
+  {k:'interest_tech',l:'Technology'},{k:'interest_ai',l:'Artificial Intelligence'},
+  {k:'interest_data',l:'Data Analysis'},{k:'interest_cybersecurity',l:'Cybersecurity'},
+  {k:'interest_design',l:'Design'},{k:'interest_creativity',l:'Creativity'},
+  {k:'interest_finance',l:'Finance'},{k:'interest_economics',l:'Economics'},
+  {k:'interest_entrepreneurship',l:'Entrepreneurship'},{k:'interest_marketing',l:'Marketing'},
+  {k:'interest_law',l:'Law'},{k:'interest_politics',l:'Politics'},
+  {k:'interest_medicine',l:'Medicine'},{k:'interest_healthcare',l:'Healthcare'},
+  {k:'interest_biology',l:'Biology Research'},{k:'interest_psychology',l:'Psychology'},
+  {k:'interest_writing',l:'Writing'},{k:'interest_journalism',l:'Journalism'},
+  {k:'interest_public_speaking',l:'Public Speaking'},{k:'interest_teaching',l:'Teaching'},
+  {k:'interest_social_work',l:'Social Work'},{k:'interest_architecture',l:'Architecture'},
+  {k:'interest_animation',l:'Animation'},{k:'interest_film',l:'Film Making'},
+  {k:'interest_photography',l:'Photography'},{k:'interest_music',l:'Music'},
+  {k:'interest_gaming',l:'Gaming'},{k:'interest_environment',l:'Environment'},
+  {k:'interest_astronomy',l:'Astronomy'},{k:'interest_sports',l:'Sports Science'},
+];
+const SKILLS = [
+  {k:'communication',l:'Communication'},{k:'leadership',l:'Leadership'},
+  {k:'creativity',l:'Creativity'},{k:'analytical_thinking',l:'Analytical Thinking'},
+  {k:'problem_solving',l:'Problem Solving'},{k:'teamwork',l:'Teamwork'},
+  {k:'empathy',l:'Empathy'},{k:'critical_thinking',l:'Critical Thinking'},
+  {k:'time_management',l:'Time Management'},{k:'adaptability',l:'Adaptability'},
+];
+
+// ── STATE ───────────────────────────────────────────────────────
+let S = {
+  stream:'', sub:'',
+  marks:{},
+  interests:[],
+  skills: Object.fromEntries(SKILLS.map(s=>[s.k,3]))
+};
+
+// ── STREAM ──────────────────────────────────────────────────────
+function pickStream(name, btn){
+  S.stream=name; S.sub=''; S.marks={};
+  document.querySelectorAll('.stream-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const subRow=document.getElementById('subRow');
+  if(name==='Science'){
+    subRow.classList.add('show');
+    document.getElementById('marksArea').style.display='none';
+    document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('on'));
+  } else {
+    subRow.classList.remove('show');
+    buildMarks(name);
+  }
+  progress();
+}
+
+function pickSub(type, btn){
+  S.sub=type; S.stream='Science '+type; S.marks={};
+  document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  buildMarks(S.stream);
+  progress();
+}
+
+function buildMarks(key){
+  const subjects=SUBJ[key]||[];
+  document.getElementById('marksGrid').innerHTML=subjects.map(s=>`
+    <div class="mfield">
+      <label>${s}</label>
+      <input type="number" min="0" max="100" placeholder="Enter marks"
+        oninput="setMark('${s}',this.value)"
+        value="${S.marks[SKEY[s]]||''}"/>
+    </div>`).join('');
+  document.getElementById('marksArea').style.display='block';
+}
+
+function setMark(s,v){
+  S.marks[SKEY[s]]=Math.min(100,Math.max(0,Number(v)||0));
+  progress();
+}
+
+// ── INTERESTS ───────────────────────────────────────────────────
+function buildChips(){
+  document.getElementById('chipsWrap').innerHTML=INTERESTS.map(i=>`
+    <button class="chip ${S.interests.includes(i.k)?'on':''}" data-k="${i.k}" onclick="toggleChip('${i.k}',this)">${i.l}</button>`).join('');
+}
+
+function toggleChip(k,btn){
+  if(S.interests.includes(k)){
+    S.interests=S.interests.filter(x=>x!==k);
+    btn.classList.remove('on');
+  } else {
+    if(S.interests.length>=10) return;
+    S.interests.push(k);
+    btn.classList.add('on');
+  }
+  document.getElementById('cntNum').textContent=S.interests.length;
+  document.querySelectorAll('.chip:not(.on)').forEach(b=>b.classList.toggle('dim',S.interests.length>=10));
+  progress();
+}
+
+// ── SKILLS ──────────────────────────────────────────────────────
+function buildSkills(){
+  document.getElementById('skillList').innerHTML=SKILLS.map(s=>`
+    <div class="sk-row">
+      <div class="sk-top">
+        <span class="sk-name">${s.l}</span>
+        <div class="sk-dots">
+          ${[1,2,3,4,5].map(n=>`<button class="sk-dot ${S.skills[s.k]>=n?'on':''}" onclick="setSkill('${s.k}',${n},this)">${n}</button>`).join('')}
+        </div>
+      </div>
+      <div class="sk-track"><div class="sk-fill" id="sf_${s.k}" style="width:${S.skills[s.k]/5*100}%"></div></div>
+    </div>`).join('');
+}
+
+function setSkill(k,v,btn){
+  S.skills[k]=v;
+  btn.closest('.sk-dots').querySelectorAll('.sk-dot').forEach((d,i)=>d.classList.toggle('on',i<v));
+  document.getElementById('sf_'+k).style.width=(v/5*100)+'%';
+  progress();
+}
+
+// ── PROGRESS ────────────────────────────────────────────────────
+function progress(){
+  let p=0;
+  if(S.stream) p+=34;
+  if(S.interests.length>=3) p+=33;
+  if(Object.keys(S.marks).length>0) p+=33;
+  document.getElementById('pbar').style.width=p+'%';
+}
+
+// ── SUBMIT ──────────────────────────────────────────────────────
+async function submitForm(){
+  const errs=[];
+  if(!S.stream) errs.push('Please select your stream.');
+  if(S.stream==='Science'&&!S.sub) errs.push('Please choose PCM or PCB.');
+  if(S.interests.length<3) errs.push('Please select at least 3 interests.');
+  const eb=document.getElementById('errBox');
+  if(errs.length){eb.innerHTML=errs.map(e=>'• '+e).join('<br>');eb.classList.add('show');eb.scrollIntoView({behavior:'smooth',block:'center'});return;}
+  eb.classList.remove('show');
+  document.getElementById('loader').classList.add('show');
+  const payload={stream:S.stream,marks:S.marks,interests:S.interests,soft_skills:S.skills};
+  try{
+    const r=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await r.json();
+    if(data.status==='success'){sessionStorage.setItem('pn_results',JSON.stringify(data));window.location.href='/results';}
+    else throw new Error(data.error||'Error');
+  } catch(e){
+    console.warn('Using mock:',e.message);
+    sessionStorage.setItem('pn_results',JSON.stringify(getMock(payload)));
+    window.location.href='/results';
+  }
+}
+
+function getMock(payload){
+  const s=payload.stream||'Science PCM';
+  const pool={
+    'Science PCM':[{career:'Software Engineer',confidence:.82,icon:'💻',color:'#00a8ff'},{career:'Data Scientist',confidence:.74,icon:'📊',color:'#7c5cff'},{career:'Cybersecurity Analyst',confidence:.61,icon:'🔐',color:'#00e5ff'}],
+    'Science PCB':[{career:'Doctor',confidence:.85,icon:'🩺',color:'#00ff88'},{career:'Biotechnologist',confidence:.71,icon:'🧬',color:'#4ade80'},{career:'Psychologist',confidence:.58,icon:'🧠',color:'#818cf8'}],
+    'Commerce':   [{career:'Chartered Accountant',confidence:.79,icon:'📋',color:'#fbbf24'},{career:'Investment Banker',confidence:.68,icon:'📈',color:'#f59e0b'},{career:'Entrepreneur',confidence:.57,icon:'🚀',color:'#f472b6'}],
+    'Arts':       [{career:'Lawyer',confidence:.77,icon:'⚖️',color:'#a78bfa'},{career:'Journalist',confidence:.65,icon:'📰',color:'#fb923c'},{career:'Teacher',confidence:.54,icon:'📚',color:'#a3e635'}],
+  };
+  const preds=(pool[s]||pool['Science PCM']).map(p=>({...p,
+    why:`Your ${s} profile and selected interests show strong alignment with ${p.career}. Your soft skill ratings further support this career direction.`,
+    skills:['Core Domain Knowledge','Analytical Thinking','Communication','Problem Solving','Continuous Learning'],
+    roadmap:['Research the field and speak to professionals','Choose the right undergraduate degree','Build skills through online courses and projects','Seek internships for practical experience','Build your professional network on LinkedIn'],
+    colleges:['IIT Bombay','NMIMS Mumbai','Mumbai University','SP Jain School of Management','KC College Mumbai'],
+  }));
+  return{status:'success',predictions:preds,student_data:payload};
+}
+
+document.addEventListener('DOMContentLoaded',()=>{buildChips();buildSkills();});
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+
+# Model (regenerate with ml_model.py)
+models/career_model.pkl
+
+# Dataset (regenerate with generate_dataset.py)
+dataset/career_dataset.csv
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
